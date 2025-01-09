@@ -408,7 +408,14 @@ export class Client {
   }
 
   private async _connect(): Promise<void> {
-    await this.beforeConnect();
+    try {
+      await this.beforeConnect();
+    } catch(err) {
+      this.debug('beforeConnect rejected, skipping the call to connect');
+      this.debug('deactivating client');
+      this.deactivate();
+      return;
+    }
 
     if (this._stompHandler) {
       this.debug('There is already a stompHandler, skipping the call to connect');
